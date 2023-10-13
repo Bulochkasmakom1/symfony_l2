@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block styles %}
+    <style>
+        .container {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <p>Name: {{ task.name }}</p>
+
+        {% if task.description %}
+            <p>Description: {{ task.description }}</p>
+            <p>Task_id: {{ task.id }}</p>
+            <p>Category: {{ task.category.name }}</p>
+            <p>Created at: {{ task.createdAt|date('d.m.Y.') }}</p>
+            <p>Date: {{ task.data|date('d.m.Y.') }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

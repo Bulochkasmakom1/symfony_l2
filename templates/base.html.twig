@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+
+    {% block stylesheets %}
+        <style>
+            :root {
+                --primary-color: #E7DFF1; /* Бежевый */
+                --accent-color: #D4A5A5; /* Сиреневый */
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background-color: var(--primary-color);
+                color: var(--accent-color);
+            }
+
+            .btn-primary-key {
+                color: white;
+                background-color: var(--accent-color);
+                border: 1px solid var(--accent-color);
+                padding: 10px 20px;
+                text-decoration: none;
+            }
+
+            .btn-primary-key:hover {
+                background-color: darken(var(--accent-color), 10%);
+            }
+
+              .task-list-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            }
+
+            .task-list-item a {
+            color: #333; /* Цвет имени задачи по умолчанию */
+            text-decoration: none;
+            }
+
+            .task-list-item a:hover {
+                color: #FF69B4; /* Цвет имени задачи при наведении курсора */
+            }
+        
+        </style>
+    {% endblock %}
+
+    {% block javascripts %}
+    {% endblock %}
+</head>
+<body>
+    {% block body %}{% endblock %}
+</body>
+</html>

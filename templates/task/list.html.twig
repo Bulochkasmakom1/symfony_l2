@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <ul class="task-list">
+    {% for task in pagination %}
+        <li class="task-list-item">
+            <div>
+                <a href="{{ path('app_task_view', { id: task.id }) }}">{{ task.name }}</a> Category: {{ task.category.name }} || Date: {{ task.createdAt|date('d.m.Y') }}
+                <a href="{{ path('app_task_edit', { id: task.id }) }}" class="btn btn-primary-key">Update</a>
+                <a href="{{ path('app_task_delete', { id: task.id }) }}" class="btn btn-primary-key">Delete</a>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+    {# Вывод пагинации #}
+    <div class="pagination">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}
