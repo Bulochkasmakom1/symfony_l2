@@ -5,22 +5,25 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Services\TaskService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/task', name: 'app_task_')]
 class TaskController extends AbstractController
 {
     //Показ всех задач
     #[Route("/", name: "list")]
-    public function list(TaskRepository $taskRepository, PaginatorInterface $paginator, Request $request): Response
+    public function list(PaginatorInterface $paginator, Request $request, TaskService $taskService): Response
     {
         // Получаем все задачи
-        $allTasks = $taskRepository->findAll();
+        $allTasks = $taskService->listTask();
     
         // Пагинируем результаты
         $pagination = $paginator->paginate(
@@ -35,13 +38,10 @@ class TaskController extends AbstractController
     }
     //подробнее о каждой записи
     #[Route("/view/{id}", name: "view")]
-    public function view(int $id,TaskRepository $taskRepository): Response
+    public function view(int $id,TaskService $taskService): Response
     {
-        $task=$taskRepository->find($id);
+        $task=$taskService->viewTask($id);
         
-        if(!$task){
-            throw $this->createNotFoundException("Task{$id} not found");
-        }
 
         return $this->render('task/view.html.twig', [
             'task'=>$task,
@@ -52,15 +52,10 @@ class TaskController extends AbstractController
     }
     //удаление записи
     #[Route("/delete/{id}", name: "delete")]
-    public function delete(int $id,TaskRepository $taskRepository,EntityManagerInterface $entityManagerInterface): Response
+    public function delete(int $id,TaskService $taskService,EntityManagerInterface $entityManagerInterface): Response
     {
-        $task=$taskRepository->find($id);
+        $task=$taskService->deleteTask($id);
 
-        if(!$task){
-            throw $this->createNotFoundException("Task{$id}not found");
-        }
-            $entityManagerInterface->remove($task);
-            $entityManagerInterface->flush();
             $this->addFlash("SUCCES","Task with {$id} succesefull deleted");
             return $this->redirectToRoute('app_task_list');      
     }
@@ -70,16 +65,11 @@ public function edit(Request $request, EntityManagerInterface $entityManager, in
 {
     $task = $entityManager->getRepository(Task::class)->find($id);
 
-    if (!$task) {
-        throw $this->createNotFoundException('Задача с ID ' . $id . ' не найдена');
-    }
-
     $form = $this->createForm(TaskType::class, $task);
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush();
 
         return $this->redirectToRoute('app_task_list');
     }
@@ -99,9 +89,6 @@ public function edit(Request $request, EntityManagerInterface $entityManager, in
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-            $task=$form->getData();
-            $entityManagerInterface->persist($task);
-            $entityManagerInterface->flush();
             $this->addFlash('SUCCES',"Task with succesfully delete");
             return $this->redirectToRoute('app_task_list');
         }
